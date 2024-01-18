@@ -5,40 +5,43 @@ function initialiserCategories(data) {
         categoriesSet.add(travail.category.name);
     });
 
-    /*Convertir l'ensemble en tableau*/
     const categories = Array.from(categoriesSet);
-
-    /*Création du menu de catégories*/
     const menuCategorie = document.getElementById('menu-categorie');
     const portfolio = document.getElementById('portfolio');
 
-    /*Ajout du bouton "tous"*/
-    const boutonTous = document.createElement('button');
-    boutonTous.textContent = 'Tous';
-    boutonTous.classList.add('stylebouton');
+    const boutonTous = creerBoutonCategorie('Tous');
     boutonTous.addEventListener('click', () => {
         mettreAJourPortfolio(data);
-        
+        mettreAJourStyleBouton('Tous');
     });
     menuCategorie.appendChild(boutonTous);
 
     categories.forEach(categorie => {
-        const boutonCategorie = document.createElement('button');
-        boutonCategorie.textContent = categorie;
-        boutonCategorie.classList.add('stylebouton');
-
-        /*Ajout du gestionnaire d'événements pour le clic*/
+        const boutonCategorie = creerBoutonCategorie(categorie);
         boutonCategorie.addEventListener('click', () => {
-            /*Filtrer les travaux en fonction de la catégorie sélectionnée*/
             const travauxFiltres = data.filter(travail => travail.category.name === categorie);
-
-            /*Mettre à jour le portfolio avec les travaux filtrés*/
             mettreAJourPortfolio(travauxFiltres);
+            mettreAJourStyleBouton(categorie);
         });
-
-        /*Ajouter le bouton au menu*/
         menuCategorie.appendChild(boutonCategorie);
-    });   
+    });
+}
+
+function creerBoutonCategorie(categorie) {
+    const boutonCategorie = document.createElement('button');
+    boutonCategorie.textContent = categorie;
+    boutonCategorie.classList.add('stylebouton');
+    return boutonCategorie;
+}
+
+function mettreAJourStyleBouton(categorieSelectionnee) {
+    const boutonsCategories = document.querySelectorAll('.stylebouton');
+    boutonsCategories.forEach(bouton => {
+        bouton.classList.remove('bouton-selectionne');
+        if (bouton.textContent === categorieSelectionnee) {
+            bouton.classList.add('bouton-selectionne');
+        }
+    });
 }
 
 
