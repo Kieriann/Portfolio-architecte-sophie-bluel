@@ -21,7 +21,7 @@ time, mark, audio, video {
 	border: 0;
 	font-size: 100%;
 	font: inherit;
-	vertical-align: baseline;
+	background-color: #fcfced;
 }
 /* HTML5 display-role reset for older browsers */
 article, aside, details, figcaption, figure,
@@ -218,3 +218,35 @@ footer nav ul {
 .stylebouton.bouton-selectionne {
     background-color:  #1D6154;
     color: white;
+}
+
+.h2login {
+	justify-content: center;
+	margin-top: 150px;
+	margin-bottom: 40px;
+}
+
+.email, .mdp {
+display: flex;
+flex-direction: column;
+flex-wrap: wrap;
+align-content: center;
+}
+
+input {
+	width: 30%;
+	height: 40px;
+	border: none;
+	box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+	margin-top: 5px;
+}
+
+.email {
+	margin-bottom: 20px;
+}
+
+.input .seconnecter {
+	display: flex;
+justify-content: center;
+align-items: center;
+}
