@@ -226,7 +226,7 @@ footer nav ul {
 	margin-bottom: 40px;
 }
 
-.email, .mdp {
+.email, .password {
 display: flex;
 flex-direction: column;
 flex-wrap: wrap;
@@ -245,8 +245,24 @@ input {
 	margin-bottom: 20px;
 }
 
-.input .seconnecter {
+.seconnecter {
 	display: flex;
 justify-content: center;
 align-items: center;
+margin-top: 15px;
+
+}
+
+.seconnecter-button {
+    width: 30%;
+    height: 40px;
+    border: none;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+   
+}
+
+.mdp-oubli {
+	display: flex;
+justify-content: center;
+margin-bottom: 500px;
 }

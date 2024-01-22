@@ -27,33 +27,27 @@
 
 <h2 class = "h2login">Log In</h2>
 
-<div class="email">
-    <label for="email" >E-mail </label>
-    <input type="email" id="email" name="email" required>
+<form id="loginForm">
+	<div class="login" id="loginContainer">
+	  <div class="email" id="emailContainer">
+		<label for="email">E-mail </label>
+		<input type="email" id="email" name="email" required>
+	  </div>
+  
+	  <div class="password" id="passwordContainer">
+		<label for="password">Mot de passe </label>
+		<input type="password" id="password" name="password" required>
+	  </div>
+	</div>
+
+
+<div class="seconnecter">
+    <input type="submit" value="Se connecter" class="seconnecter-button" id="seconnecter-button">
 </div>
-
-<div class="mdp">
-    <label for="password" >Mot de passe </label>
-    <input type="password" id="password" name="password" required>
-</div>
-
-<input type="submit" value="Se connecter" id="seconnecter">
+</form>
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+<div class="mdp-oubli" id="mdp-oubli">Mot de passe oublié</div>
 
 
     <footer>
@@ -63,7 +57,7 @@
             </ul>
         </nav>
     </footer>
-    <script src="../backend/script.js"></script>
-    <script src="../backend/categories.js"></script>
+
+	<script src="../backend/connexion.js"></script>
     </body>
     </html>
