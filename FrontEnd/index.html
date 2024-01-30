@@ -8,7 +8,14 @@
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Work+Sans&display=swap" rel="stylesheet">
 	<meta name="description" content="">
-	<link rel="stylesheet" href="./assets/style.css">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css"
+      integrity="sha512-MV7K8+y+gLIBoVD59lQIYicR65iaqukzvf/nwasF0nqhPay5w/9lJmVM2hMDcnK1OnMGCdVK+iQrJ7lzPJQd1w=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+   	<link rel="stylesheet" href="./assets/style.css">
 	
 </head>
 <body>
@@ -18,7 +25,7 @@
 		<ul>
 			<li>projets</li>
 			<li>contact</li>
-			<li>login</li>
+			<li><a href="connexion.html">login</a></li>
 			<li><img src="./assets/icons/instagram.png" alt="Instagram"></li>
 		</ul>
 	</nav>
@@ -37,7 +44,31 @@
 	</section> <!--à laisser là--> 
 
 
+	<div class = "projet-modif">
+		<div class = "h2projet">
 		<h2 class = "h2projet">Mes projets</h2>
+		</div>
+			
+		<div class="modif" id="modif">
+			<i class="fa-solid fa-pen-to-square"></i>
+			<a href="#modal1" class="js-modal">Modifier</a>
+		</div>
+
+		<aside id="modal1" class="modal" aria-hidden="true" role="dialog" aria-labelledby="titlemodal" style="display:none" aria-modal="false">
+			<div class="modal-wrapper js-modal-stop">
+				<button class="js-modal-close" onclick="closeModal()"><i class="fas fa-xmark"></i></button>
+				<h2 class="titlemodal" id="titlemodal">Galerie photo</h2>
+				<!-- Galerie miniature dans la modale -->
+				<div id="miniGallery" class="miniGallery"></div>
+				<!-- Ajouter une photo -->
+				<div class="addpic" id="addpic" onclick="openFileInput()">Ajouter une photo</div>
+				<input type="file" id="fileInput" style="display: none;" onchange="handleFileSelection(this)">
+			</div>
+		</aside>
+	</div>
+	</div>
+		
+		
 		
 		<section id="categories">
 			<div id="menu-categorie" class="menu-categorie">
@@ -47,9 +78,7 @@
 		  </section>
 
 	
-	<section id="portfolio">
-	
-		
+	<section id="portfolio">		
 	</section>
 	
 	<section id="contact">
@@ -74,7 +103,10 @@
 		</ul>
 	</nav>
 </footer>
-<script src="../backend/script.js"></script>
 <script src="../backend/categories.js"></script>
+<script src="../backend/modal.js"></script>
+<script src="../backend/script.js"></script>
+
+
 </body>
 </html>
