@@ -38,6 +38,11 @@ function openModal(e) {
     });
 }
 
+document.getElementById('addImageBtn').addEventListener('click', function () {
+    document.getElementById('fileInput').click();
+});
+
+
 function initializeMiniGallery() {
     const mainGallery = document.getElementById('portfolio');
     const miniGallery = document.getElementById('miniGallery');
