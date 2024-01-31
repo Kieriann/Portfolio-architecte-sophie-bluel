@@ -51,13 +51,6 @@ function initializeMiniGallery() {
     }    
 }
 
-function openFileInput() {
-    const fileInput = document.getElementById('fileInput');
-    fileInput.click();
-}
-const addPicButton = document.getElementById('addpic');
-addPicButton.addEventListener('click', openFileInput);
-
 function deleteImageFromGallery(miniatureContainer) {
     const imageGallery = document.getElementById('miniGallery');
     const index = Array.from(imageGallery.children).indexOf(miniatureContainer);
@@ -119,41 +112,7 @@ window.addEventListener("keydown", function (e) {
     }
 });
 
-function handleFileSelection(input) {
-    const file = input.files[0];
 
-    if (file) {
-        const imgElement = document.createElement('img');
-     
-        // Créez un conteneur pour l'image (facultatif, selon votre structure)
-        const imageContainer = document.createElement('div');
-        imageContainer.classList.add('miniature-container');
 
-        // Ajoutez l'image au conteneur
-        imageContainer.appendChild(imgElement);
-
-        // Ajoutez le conteneur à la mini-galerie
-        const miniGallery = document.getElementById('miniGallery');
-        miniGallery.appendChild(imageContainer);
-
-        // Chargez le contenu de l'image depuis le fichier sélectionné
-        const reader = new FileReader();
-        reader.onload = function (e) {
-            imgElement.src = e.target.result;
-
-            // Ajoutez l'image au portfolio (ajout de code supplémentaire ici si nécessaire)
-            const portfolio = document.getElementById('portfolio');
-            const portfolioImage = imgElement.cloneNode(true);
-            portfolio.appendChild(portfolioImage);
-        };
-        reader.readAsDataURL(file);
-    }
-}
-
-// Ajoutez cet événement pour gérer la sélection de fichier à partir de l'input file
-const fileInput = document.getElementById('fileInput');
-fileInput.addEventListener('change', function() {
-    handleFileSelection(this);
-});
 
 
