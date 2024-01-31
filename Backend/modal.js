@@ -21,8 +21,22 @@ function openModal(e) {
         initializeMiniGallery();
         miniGalleryInitialized = true;
     }
-}
 
+    const modalId = e.currentTarget.getAttribute("href");
+    console.log("modalId:", modalId); 
+    modal = document.querySelector(modalId);
+    console.log("modal:", modal);
+    
+    // ...
+
+    modal.querySelector(".js-modal-stop").addEventListener("click", stopPropagation);
+
+    const addPicButton = document.getElementById('addpic');
+    addPicButton.addEventListener('click', function () {
+        closeModal(e);
+        openModal2(); 
+    });
+}
 
 function initializeMiniGallery() {
     const mainGallery = document.getElementById('portfolio');
@@ -50,6 +64,17 @@ function initializeMiniGallery() {
         miniGalleryInitialized = true;
     }    
 }
+
+function openModal2() {
+    const modal2 = document.getElementById('modal2');
+    modal2.style.display = null;
+    modal2.removeAttribute("aria-hidden");
+    modal2.setAttribute("aria-modal", "true");
+    modal2.addEventListener("click", closeModal);
+    modal2.querySelector(".js-modal-close").addEventListener("click", closeModal);
+    modal2.querySelector(".js-modal-stop").addEventListener("click", stopPropagation);
+}
+
 
 function deleteImageFromGallery(miniatureContainer) {
     const imageGallery = document.getElementById('miniGallery');
