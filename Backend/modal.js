@@ -209,8 +209,6 @@ window.addEventListener('DOMContentLoaded', (event) => {
     }
 }
 
-
-
 const addImageBtn = document.getElementById('addImageBtn');
 const fileInputModal2 = document.getElementById('fileInputModal2'); 
 let fileInputOpened = false; 
