@@ -4,6 +4,9 @@ let focusables = [];
 let previouslyFocusedElement = null;
 let miniGalleryInitialized = false;
 
+
+
+
 function openModal(e) {
     e.preventDefault();
     modal = document.querySelector(e.target.getAttribute("href"));
@@ -23,9 +26,7 @@ function openModal(e) {
     }
 
     const modalId = e.currentTarget.getAttribute("href");
-    console.log("modalId:", modalId); 
-    modal = document.querySelector(modalId);
-    console.log("modal:", modal);
+  
     
     // ...
 
@@ -78,6 +79,10 @@ function openModal2() {
     modal2.addEventListener("click", closeModal);
     modal2.querySelector(".js-modal-close").addEventListener("click", closeModal);
     modal2.querySelector(".js-modal-stop").addEventListener("click", stopPropagation);
+
+    document.getElementById('fileInputModal2').addEventListener('change', function() {
+        updateImageUploadContainer(this);
+    });
 }
 
 
@@ -141,6 +146,86 @@ window.addEventListener("keydown", function (e) {
         focusInModal(e);
     }
 });
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Sélectionnez les éléments du formulaire
+    const imageTitle = document.getElementById('imageTitle');
+    const categoryList = document.getElementById('categorylist');
+    const fileInputModal2 = document.getElementById('fileInputModal2');
+    const validateButton = document.getElementById('validateButton');
+
+    // Fonction pour vérifier les entrées et mettre à jour la classe du bouton
+    function checkInputs() {
+        const title = imageTitle.value.trim();
+        const category = categoryList.value;
+        const fileSelected = fileInputModal2.files.length > 0;
+
+        if (title && category && fileSelected) {
+            validateButton.classList.add('validateButton-active');
+            validateButton.classList.remove('validateButton');
+        } else {
+            validateButton.classList.remove('validateButton-active');
+            validateButton.classList.add('validateButton');
+        }
+    }
+
+    // Ajoutez des écouteurs d'événements aux éléments du formulaire
+    imageTitle.addEventListener('input', checkInputs);
+    categoryList.addEventListener('change', checkInputs);
+    fileInputModal2.addEventListener('change', checkInputs);
+
+    // Initialisez l'état initial du bouton
+    checkInputs();
+});
+
+        
+    
+
+
+
+
+
+
+function updateImageUploadContainer(fileInput) {
+    console.log("Mise à jour du conteneur d'images");
+    const imageUploadContainer = document.getElementById('image-upload-container');
+    console.log(imageUploadContainer); // Vérifiez si l'élément est correctement sélectionné
+
+    if (fileInput.files.length > 0) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            console.log("Fichier chargé");
+            const image = new Image();
+            image.src = e.target.result;
+            image.onload = function () {
+                imageUploadContainer.innerHTML = '';
+                imageUploadContainer.appendChild(image);
+            };
+            image.onerror = function () {
+                console.error('Erreur lors du chargement de l\'image');
+            };
+        };
+
+        reader.readAsDataURL(fileInput.files[0]);
+    }
+}
+
+
+
+// Ajoutez un écouteur d'événements au bouton "Ajouter photo"
+const addImageBtn = document.getElementById('addImageBtn');
+if (addImageBtn) {
+    addImageBtn.addEventListener('click', function () {
+        closeModal();
+        openModal2();
+    });
+}
+
+
+
+
+
 
 
 

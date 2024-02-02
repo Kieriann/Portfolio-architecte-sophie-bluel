@@ -438,6 +438,11 @@ button.js-modal-close:hover {
 	padding: 8px 40px;	
 }
 
+#image-upload-container img{
+	height: 230px;
+	width: 240px;
+}
+
 .image-upload-container {
 	display: flex;
 	flex-direction: column;
@@ -449,7 +454,9 @@ button.js-modal-close:hover {
 	border-radius: 5px;
 	margin-left: 40px;
 	margin-right: 40px;
+	height: 200px;
 }
+
 
 .fa-image {
 	color: rgb(170, 170, 170);
@@ -501,4 +508,13 @@ button.js-modal-close:hover {
     width: 200%; 
     height: 1px; 
     background-color: #929292; 
+}
+
+.validateButton {
+	background-color:rgb(175, 173, 173) ;
+
+}
+
+#validateButton.validateButton-active {
+    background-color: #1D6154;
 }

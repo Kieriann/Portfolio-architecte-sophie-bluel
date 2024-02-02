@@ -52,5 +52,8 @@ fetch('http://localhost:5678/api/works')
 
         // Appel de la fonction initializeMiniGallery après avoir chargé les travaux
         initializeMiniGallery();
+        document.getElementById('fileInputModal2').addEventListener('change', function() {
+            updateImageUploadContainer(this);
+        });
     })
     .catch(error => console.error('Erreur lors de la récupération des travaux:', error));
