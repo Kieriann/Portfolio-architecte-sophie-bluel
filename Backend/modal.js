@@ -70,8 +70,19 @@ function openModal2() {
     modal2.removeAttribute("aria-hidden");
     modal2.setAttribute("aria-modal", "true");
     modal2.addEventListener("click", closeModal);
-    modal2.querySelector(".js-modal-close").addEventListener("click", closeModal);
     modal2.querySelector(".js-modal-stop").addEventListener("click", stopPropagation);
+    modal2.querySelector(".js-modal-close").addEventListener("click", function(e) {
+        closeModal(e, modal2);
+    });
+
+    modal2.addEventListener("click", function(e) {
+        if (e.target === modal2) {
+            closeModal(e, modal2);
+        }
+    });
+
+    modal2.querySelector(".js-modal-stop").addEventListener("click", stopPropagation);
+}
 
     document.getElementById('fileInputModal2').addEventListener('change', function() {
         if (this.files && this.files[0]) {
@@ -80,33 +91,39 @@ function openModal2() {
             console.error("Aucun fichier sélectionné");
         }
     }); 
-} 
 
-function deleteImageFromGallery(miniatureContainer) {
-    const imageGallery = document.getElementById('miniGallery');
-    const index = Array.from(imageGallery.children).indexOf(miniatureContainer);
-    console.log
-    if (index !== -1) {
-        
+
+    function deleteImageFromGallery(miniatureContainer, portfolioFigure) {
+        const imageGallery = document.getElementById('miniGallery');
+        const portfolio = document.getElementById('portfolio');
+    
         imageGallery.removeChild(miniatureContainer);
+    
+        if (portfolioFigure && portfolio.contains(portfolioFigure)) {
+            portfolio.removeChild(portfolioFigure);
+        } else {
+            console.error("Élément non trouvé dans le portfolio ou undefined:", portfolioFigure);
+        }
     }
-}
-function closeModal(e) {
-    if (modal === null) return;
+    
+
+
+function closeModal(e, modalElement = null) {
+    const modalToClose = modalElement || modal;
+    if (modalToClose === null) return;
+
     if (previouslyFocusedElement !== null) previouslyFocusedElement.focus();
     e.preventDefault();
-    window.setTimeout(function () {
-        modal = null;
-    }, 500);
-    modal.style.display = "none";
-    modal.setAttribute("aria-hidden", "true");
-    modal.removeAttribute("aria-modal");
-    modal.removeEventListener("click", closeModal);
-    modal.querySelector(".js-modal-close").removeEventListener("click", closeModal);
-    modal.querySelector(".js-modal-stop").removeEventListener("click", stopPropagation);
+    modalToClose.style.display = "none";
+    modalToClose.setAttribute("aria-hidden", "true");
+    modalToClose.removeAttribute("aria-modal");
+    modalToClose.removeEventListener("click", closeModal);
+    modalToClose.querySelector(".js-modal-close").removeEventListener("click", closeModal);
+    modalToClose.querySelector(".js-modal-stop").removeEventListener("click", stopPropagation);
 
     modal = null;
 }
+
 
 function stopPropagation(e) {
     e.stopPropagation();
@@ -230,55 +247,64 @@ if (addImageBtn && fileInputModal2) {
     });
 }
 
-document.addEventListener('DOMContentLoaded', (event) => {
-    const fileInputModal2 = document.getElementById('fileInputModal2'); 
-    const validateButton = document.getElementById('validateButton');
-
-    validateButton.addEventListener('click', function() {
-        console.log("Clic sur validateButton détecté"); // Ajouter cette ligne pour le débogage
-        if (fileInputModal2 && fileInputModal2.files.length > 0) {
-            addImageToPortfolio(fileInputModal2.files[0]);
-            closeModal();
-        } else {
-            console.error("Aucun fichier sélectionné");
-        }
-    });
-});
-
-
 function addImageToPortfolio(file) {
     const reader = new FileReader();
     reader.onload = function(e) {
         const imageSrc = e.target.result;
-
-        // Récupération du titre et de la catégorie de l'image
         const imageTitle = document.getElementById('imageTitle').value;
-        const category = document.getElementById('categorylist').value; // ou le texte de l'option sélectionnée si nécessaire
 
-        // Création de l'élément figure
-        const figure = document.createElement('figure');
-
-        // Création de l'élément img et configuration de ses attributs
-        const imageElement = document.createElement('img');
-        imageElement.src = imageSrc;
-        imageElement.alt = imageTitle; // Utilisation du titre comme texte alternatif
-
-        // Création de l'élément figcaption et ajout du titre
-        const figcaption = document.createElement('figcaption');
-        figcaption.textContent = imageTitle + " - Catégorie: " + category; // Concaténation du titre et de la catégorie
-
-        // Ajout de img et figcaption à figure
-        figure.appendChild(imageElement);
-        figure.appendChild(figcaption);
-
-        // Ajout de la figure au portfolio
+        const figure = createPortfolioFigure(imageSrc, imageTitle);
         const portfolio = document.getElementById('portfolio');
         portfolio.appendChild(figure);
+
+        const miniature = createMiniature(imageSrc, imageTitle, figure);
+        const miniGallery = document.getElementById('miniGallery');
+        miniGallery.appendChild(miniature);
     };
     reader.readAsDataURL(file);
 }
 
 
+function createPortfolioFigure(imageSrc, imageTitle) {
+    const figure = document.createElement('figure');
+    const imageElement = document.createElement('img');
+    imageElement.src = imageSrc;
+    imageElement.alt = imageTitle;
+    figure.appendChild(imageElement);
+    return figure;
+}
 
 
+document.addEventListener('DOMContentLoaded', (event) => {
+    const fileInputModal2 = document.getElementById('fileInputModal2'); 
+    const validateButton = document.getElementById('validateButton');
 
+    validateButton.addEventListener('click', function(e) {
+        if (fileInputModal2 && fileInputModal2.files.length > 0) {
+            addImageToPortfolio(fileInputModal2.files[0]);
+            closeModal(e, document.getElementById('modal2'));
+        } else {
+            console.error("Aucun fichier sélectionné.");
+        }
+    });
+});
+
+
+function createMiniature(imageSrc, imageTitle, portfolioFigure) {
+    const miniatureContainer = document.createElement('div');
+    miniatureContainer.classList.add('miniature-container');
+
+    const clonedImage = document.createElement('img');
+    clonedImage.src = imageSrc;
+    clonedImage.alt = imageTitle;
+    miniatureContainer.appendChild(clonedImage);
+
+    const deleteIcon = document.createElement('i');
+    deleteIcon.classList.add('fas', 'fa-trash-alt', 'delete-icon');
+    deleteIcon.addEventListener("click", function() {
+        deleteImageFromGallery(miniatureContainer, portfolioFigure);
+    });
+    miniatureContainer.appendChild(deleteIcon);
+
+    return miniatureContainer;
+}

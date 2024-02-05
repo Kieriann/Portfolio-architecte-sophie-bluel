@@ -20,12 +20,17 @@
 </head>
 <body>
 <header>
+	<!-- Bandeau Mode Édition -->
+<div id="editModeBanner" style="display: none;">
+    <i class="fa-solid fa-pen-to-square" id="penbanner"></i> Mode édition
+</div>
+
 	<h1>Sophie Bluel <span>Architecte d'intérieur</span></h1>
 	<nav>
 		<ul>
 			<li>projets</li>
 			<li>contact</li>
-			<li><a href="connexion.html">login</a></li>
+			<li class="blackli"><a href="connexion.html" id="loginLogoutLink">login</a></li>
 			<li><img src="./assets/icons/instagram.png" alt="Instagram"></li>
 		</ul>
 	</nav>
@@ -50,8 +55,11 @@
 		</div>
 			
 		<div class="modif" id="modif">
-			<i class="fa-solid fa-pen-to-square"></i>
-			<a href="#modal1" class="js-modal">Modifier</a>
+			<div id="editLinkContainer">
+				<i class="fa-solid fa-pen-to-square"></i>
+				<a href="#modal1" class="js-modal" id="editLink">Modifier</a>
+			</div>
+			
 		</div>
 
 		<aside id="modal1" class="modal" aria-hidden="true" role="dialog" aria-labelledby="titlemodal" style="display:none" aria-modal="false">
@@ -96,16 +104,13 @@
 
 	</div>
 	</div>
-		
-		
-		
+				
 		<section id="categories">
 			<div id="menu-categorie" class="menu-categorie">
 				<!--les boutons-->
 			</div>
 			</div>
 		  </section>
-
 	
 	<section id="portfolio">		
 	</section>
@@ -135,7 +140,6 @@
 <script src="../backend/categories.js"></script>
 <script src="../backend/modal.js"></script>
 <script src="../backend/script.js"></script>
-
 
 </body>
 </html>

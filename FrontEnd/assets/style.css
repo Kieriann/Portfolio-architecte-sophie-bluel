@@ -31,6 +31,43 @@ footer, header, hgroup, menu, nav, section {
 body {
 	line-height: 1;
 }
+
+#editModeBanner {
+    width: 100%;
+    height: 40px;
+    background-color: black;
+    color: white;
+    text-align: center;
+	gap:5px;
+	align-items: center;
+    line-height: 20px; /* Centrage vertical du texte */
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000; /* S'assurer qu'il reste au-dessus des autres éléments */
+	justify-content: center;
+}
+
+#penbanner {
+color: white;
+background-color: black;
+}
+
+
+
+.blackli a{
+text-decoration: none;
+color: black;
+}
+
+.boldli {
+	font-weight: bold ;
+}
+
+nav li a [href="connexion.html"]{
+	text-decoration: none;
+	color: black
+}
 ol, ul {
 	list-style: none;
 }
@@ -96,6 +133,8 @@ nav li {
 	padding: 0 10px;
 	font-size: 1.2em;
 }
+
+
 
 li:hover {
 	color: #B1663C;
@@ -268,6 +307,11 @@ margin-bottom: 500px;
 	align-items: center;
 	gap:30px;
 	margin-top: 100px;
+}
+
+.projet-modif a {
+	text-decoration: none;
+	color: black;
 }
 
 .modal, .modal2 {
