@@ -73,13 +73,17 @@ function openModal2() {
     modal2.querySelector(".js-modal-close").addEventListener("click", closeModal);
     modal2.querySelector(".js-modal-stop").addEventListener("click", stopPropagation);
 
-  document.getElementById('fileInputModal2').addEventListener('change', function() {
-    console.log("Événement change déclenché pour fileInputModal2");
-    updateImageUploadContainer(this);
-});
+    document.getElementById('fileInputModal2').addEventListener('change', function() {
+        if (this.files && this.files[0]) {
+            addImageToPortfolio(this.files[0]);
+        } else {
+            console.error("Aucun fichier sélectionné");
+        }
+    });
+};
 
     
-}
+
 
 
 function deleteImageFromGallery(miniatureContainer) {
@@ -229,4 +233,38 @@ if (addImageBtn && fileInputModal2) {
         fileInputOpened = false; 
     });
 }
+
+document.addEventListener('DOMContentLoaded', (event) => {
+    const validateButton = document.getElementById('validateButton');
+    const fileInputModal2 = document.getElementById('fileInputModal2'); // Déplacez cette ligne ici
+
+    validateButton.addEventListener('click', function() {
+        if (fileInputModal2 && fileInputModal2.files.length > 0) {
+            addImageToPortfolio(fileInputModal2.files[0]);
+            closeModal();
+        } else {
+            console.error("Aucun fichier sélectionné");
+        }
+    });
+});
+
+function addImageToPortfolio(file) {
+    const reader = new FileReader();
+    reader.onload = function (e) {
+        const imageSrc = e.target.result;
+
+        const imageElement = document.createElement('img');
+        imageElement.src = imageSrc;
+        imageElement.className = 'gallery'; 
+        imageElement.setAttribute('data-title', document.getElementById('imageTitle').value);
+        imageElement.setAttribute('data-category', document.getElementById('categorylist').value);
+
+        const portfolioSection = document.getElementById('portfolio');
+        portfolioSection.appendChild(imageElement);
+    };
+    reader.readAsDataURL(file);
+}
+
+
+
 
