@@ -75,16 +75,12 @@ function openModal2() {
 
     document.getElementById('fileInputModal2').addEventListener('change', function() {
         if (this.files && this.files[0]) {
-            addImageToPortfolio(this.files[0]);
+            updateImageUploadContainer(this);
         } else {
             console.error("Aucun fichier sélectionné");
         }
-    });
-};
-
-    
-
-
+    }); 
+} 
 
 function deleteImageFromGallery(miniatureContainer) {
     const imageGallery = document.getElementById('miniGallery');
@@ -235,10 +231,11 @@ if (addImageBtn && fileInputModal2) {
 }
 
 document.addEventListener('DOMContentLoaded', (event) => {
+    const fileInputModal2 = document.getElementById('fileInputModal2'); 
     const validateButton = document.getElementById('validateButton');
-    const fileInputModal2 = document.getElementById('fileInputModal2'); // Déplacez cette ligne ici
 
     validateButton.addEventListener('click', function() {
+        console.log("Clic sur validateButton détecté"); // Ajouter cette ligne pour le débogage
         if (fileInputModal2 && fileInputModal2.files.length > 0) {
             addImageToPortfolio(fileInputModal2.files[0]);
             closeModal();
@@ -248,22 +245,39 @@ document.addEventListener('DOMContentLoaded', (event) => {
     });
 });
 
+
 function addImageToPortfolio(file) {
     const reader = new FileReader();
-    reader.onload = function (e) {
+    reader.onload = function(e) {
         const imageSrc = e.target.result;
 
+        // Récupération du titre et de la catégorie de l'image
+        const imageTitle = document.getElementById('imageTitle').value;
+        const category = document.getElementById('categorylist').value; // ou le texte de l'option sélectionnée si nécessaire
+
+        // Création de l'élément figure
+        const figure = document.createElement('figure');
+
+        // Création de l'élément img et configuration de ses attributs
         const imageElement = document.createElement('img');
         imageElement.src = imageSrc;
-        imageElement.className = 'gallery'; 
-        imageElement.setAttribute('data-title', document.getElementById('imageTitle').value);
-        imageElement.setAttribute('data-category', document.getElementById('categorylist').value);
+        imageElement.alt = imageTitle; // Utilisation du titre comme texte alternatif
 
-        const portfolioSection = document.getElementById('portfolio');
-        portfolioSection.appendChild(imageElement);
+        // Création de l'élément figcaption et ajout du titre
+        const figcaption = document.createElement('figcaption');
+        figcaption.textContent = imageTitle + " - Catégorie: " + category; // Concaténation du titre et de la catégorie
+
+        // Ajout de img et figcaption à figure
+        figure.appendChild(imageElement);
+        figure.appendChild(figcaption);
+
+        // Ajout de la figure au portfolio
+        const portfolio = document.getElementById('portfolio');
+        portfolio.appendChild(figure);
     };
     reader.readAsDataURL(file);
 }
+
 
 
 
