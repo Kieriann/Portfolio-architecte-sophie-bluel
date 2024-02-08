@@ -19,7 +19,7 @@
                 const data = await response.json();
                 console.log(data);
                 localStorage.setItem("token", data.token);
-                localStorage.setItem("loggedIn", true); // Ajout d'un indicateur de connexion
+                localStorage.setItem("loggedIn", true); 
                 window.location.href = 'index.html';
             } else {
                 alert('Identifiants incorrects. Veuillez réessayer.');

@@ -40,11 +40,11 @@ body {
     text-align: center;
 	gap:5px;
 	align-items: center;
-    line-height: 20px; /* Centrage vertical du texte */
+    line-height: 20px; 
     position: fixed;
     top: 0;
     left: 0;
-    z-index: 1000; /* S'assurer qu'il reste au-dessus des autres éléments */
+    z-index: 1000; 
 	justify-content: center;
 }
 
@@ -561,4 +561,24 @@ button.js-modal-close:hover {
 
 #validateButton.validateButton-active {
     background-color: #1D6154;
+}
+
+.closebutton {
+ display: flex;
+ flex-direction: row-reverse;
+ justify-content: space-between;
+ background-color: white;
+}
+
+.fa-solid .fa-arrow-left {
+background-color: white;
+}
+
+.js-modal-return {
+	background-color: white;
+	border: none
+}
+
+.h2contact{
+	justify-content: center;
 }

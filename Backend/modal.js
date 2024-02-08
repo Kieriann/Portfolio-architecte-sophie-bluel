@@ -34,9 +34,6 @@ function openModal(e) {
     });
 }
 
-
-
-
 function initializeMiniGallery() {
     const mainGallery = document.getElementById('portfolio');
     const miniGallery = document.getElementById('miniGallery');
@@ -53,8 +50,9 @@ function initializeMiniGallery() {
 
             const deleteIcon = document.createElement('i');
             deleteIcon.classList.add('fas', 'fa-trash-alt', 'delete-icon');
+            const workId = image.getAttribute("id")
             deleteIcon.addEventListener("click", function(){
-                deleteImageFromGallery(miniatureContainer);
+                deleteImageFromGallery(workId);
                });
             miniatureContainer.appendChild(deleteIcon);
             miniGallery.appendChild(miniatureContainer);
@@ -93,20 +91,25 @@ function openModal2() {
     }); 
 
 
-    function deleteImageFromGallery(miniatureContainer, portfolioFigure) {
-        const imageGallery = document.getElementById('miniGallery');
-        const portfolio = document.getElementById('portfolio');
-    
-        imageGallery.removeChild(miniatureContainer);
-    
-        if (portfolioFigure && portfolio.contains(portfolioFigure)) {
-            portfolio.removeChild(portfolioFigure);
-        } else {
-            console.error("Élément non trouvé dans le portfolio ou undefined:", portfolioFigure);
+        async function deleteImageFromGallery(workId) {
+            try {
+                const response = await fetch(`http://localhost:5678/api/works/${workId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+        
+                if (response.ok) {
+                    console.log("Travail supprimé avec succès");
+                } else {
+                    console.error("Erreur lors de la suppression du travail");
+                }
+            } catch (error) {
+                console.error("Erreur lors de la communication avec l'API:", error);
+            }
         }
-    }
     
-
 
 function closeModal(e, modalElement = null) {
     const modalToClose = modalElement || modal;
@@ -123,7 +126,6 @@ function closeModal(e, modalElement = null) {
 
     modal = null;
 }
-
 
 function stopPropagation(e) {
     e.stopPropagation();
@@ -210,7 +212,9 @@ window.addEventListener('DOMContentLoaded', (event) => {
             image.src = e.target.result;
             image.onload = function () {
                 console.log("Image chargée dans le navigateur"); 
-                imageUploadContainer.innerHTML = '';
+                while (imageUploadContainer.firstChild) {
+                    imageUploadContainer.removeChild(imageUploadContainer.firstChild);
+                }
                 imageUploadContainer.appendChild(image);
                 console.log("Image ajoutée au conteneur"); 
             };
@@ -247,31 +251,36 @@ if (addImageBtn && fileInputModal2) {
     });
 }
 
-function addImageToPortfolio(file) {
+async function addImageToPortfolio(file) {
     const reader = new FileReader();
-    reader.onload = function(e) {
-        const imageSrc = e.target.result;
+    reader.onload = async function(e) {
         const imageTitle = document.getElementById('imageTitle').value;
+        const category = document.getElementById('categorylist').value;
+        const formData = new FormData();
 
-        const figure = createPortfolioFigure(imageSrc, imageTitle);
-        const portfolio = document.getElementById('portfolio');
-        portfolio.appendChild(figure);
+        formData.append("image", file);
+        formData.append("title", imageTitle);
+        formData.append("category", category);
 
-        const miniature = createMiniature(imageSrc, imageTitle, figure);
-        const miniGallery = document.getElementById('miniGallery');
-        miniGallery.appendChild(miniature);
+        try {
+            const response = await fetch(`http://localhost:5678/api/works`, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                }
+            });
+    
+            if (response.ok) {
+                console.log("Travail ajouté avec succès");
+            } else {
+                console.error("Erreur lors de l'ajout du travail");
+            }
+        } catch (error) {
+            console.error("Erreur lors de la communication avec l'API lors de l'ajout:", error);
+        }
     };
     reader.readAsDataURL(file);
-}
-
-
-function createPortfolioFigure(imageSrc, imageTitle) {
-    const figure = document.createElement('figure');
-    const imageElement = document.createElement('img');
-    imageElement.src = imageSrc;
-    imageElement.alt = imageTitle;
-    figure.appendChild(imageElement);
-    return figure;
 }
 
 
@@ -289,22 +298,27 @@ document.addEventListener('DOMContentLoaded', (event) => {
     });
 });
 
-
-function createMiniature(imageSrc, imageTitle, portfolioFigure) {
-    const miniatureContainer = document.createElement('div');
-    miniatureContainer.classList.add('miniature-container');
-
-    const clonedImage = document.createElement('img');
-    clonedImage.src = imageSrc;
-    clonedImage.alt = imageTitle;
-    miniatureContainer.appendChild(clonedImage);
-
-    const deleteIcon = document.createElement('i');
-    deleteIcon.classList.add('fas', 'fa-trash-alt', 'delete-icon');
-    deleteIcon.addEventListener("click", function() {
-        deleteImageFromGallery(miniatureContainer, portfolioFigure);
-    });
-    miniatureContainer.appendChild(deleteIcon);
-
-    return miniatureContainer;
+function openModalById(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        modal.style.display = null; // Affiche le modal
+        modal.setAttribute("aria-hidden", "false");
+        modal.setAttribute("aria-modal", "true");
+    }
 }
+
+// Fonction pour fermer le modal actuellement ouvert
+function closeModalById(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        modal.style.display = "none"; // Cache le modal
+        modal.setAttribute("aria-hidden", "true");
+        modal.removeAttribute("aria-modal");
+    }
+}
+
+// Gestionnaire d'événements pour le bouton js-modal-return
+document.querySelector('.js-modal-return').addEventListener('click', function() {
+    closeModalById('modal2'); // Ferme modal2
+    openModalById('modal1'); // Ouvre modal1
+});
