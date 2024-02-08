@@ -5,8 +5,8 @@ let previouslyFocusedElement = null;
 let miniGalleryInitialized = false;
 
 
-
-
+ //Ouvre un modal et initialise le focus sur le premier élément focusable.
+ 
 function openModal(e) {
     e.preventDefault();
     modal = document.querySelector(e.target.getAttribute("href"));
@@ -23,17 +23,17 @@ function openModal(e) {
     if (!miniGalleryInitialized) {
         initializeMiniGallery();
         miniGalleryInitialized = true;
-    }  
-    
-    modal.querySelector(".js-modal-stop").addEventListener("click", stopPropagation);
+    }
 
-    const addPicButton = document.getElementById('addpic');
-    addPicButton.addEventListener('click', function () {
+    document.getElementById('addpic').addEventListener('click', function () {
         closeModal(e);
         openModal2(); 
     });
 }
 
+
+ //Initialise une mini galerie d'images.
+ 
 function initializeMiniGallery() {
     const mainGallery = document.getElementById('portfolio');
     const miniGallery = document.getElementById('miniGallery');
@@ -51,9 +51,9 @@ function initializeMiniGallery() {
             const deleteIcon = document.createElement('i');
             deleteIcon.classList.add('fas', 'fa-trash-alt', 'delete-icon');
             const workId = image.getAttribute("id")
-            deleteIcon.addEventListener("click", function(){
+            deleteIcon.addEventListener("click", function() {
                 deleteImageFromGallery(workId);
-               });
+            });
             miniatureContainer.appendChild(deleteIcon);
             miniGallery.appendChild(miniatureContainer);
         });
@@ -62,6 +62,9 @@ function initializeMiniGallery() {
     }    
 }
 
+
+ //Ouvre un second modal.
+ 
 function openModal2() {
     const modal2 = document.getElementById('modal2');
     modal2.style.display = null;
@@ -78,39 +81,27 @@ function openModal2() {
             closeModal(e, modal2);
         }
     });
-
-    modal2.querySelector(".js-modal-stop").addEventListener("click", stopPropagation);
 }
 
-    document.getElementById('fileInputModal2').addEventListener('change', function() {
-        if (this.files && this.files[0]) {
-            updateImageUploadContainer(this);
-        } else {
-            console.error("Aucun fichier sélectionné");
-        }
-    }); 
 
-
-        async function deleteImageFromGallery(workId) {
-            try {
-                const response = await fetch(`http://localhost:5678/api/works/${workId}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`
-                    }
-                });
-        
-                if (response.ok) {
-                    console.log("Travail supprimé avec succès");
-                } else {
-                    console.error("Erreur lors de la suppression du travail");
-                }
-            } catch (error) {
-                console.error("Erreur lors de la communication avec l'API:", error);
+ //Supprime une image de la galerie.
+ 
+async function deleteImageFromGallery(workId) {
+    try {
+        const response = await fetch(`http://localhost:5678/api/works/${workId}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
             }
-        }
-    
+        });
+    } catch (error) {
+        console.error("Erreur lors de la suppression de l'image:", error);
+    }
+}
 
+
+ // Ferme le modal actuellement ouvert.
+ 
 function closeModal(e, modalElement = null) {
     const modalToClose = modalElement || modal;
     if (modalToClose === null) return;
@@ -127,10 +118,16 @@ function closeModal(e, modalElement = null) {
     modal = null;
 }
 
+
+ //Empêche la propagation de l'événement.
+ 
 function stopPropagation(e) {
     e.stopPropagation();
 }
 
+
+  //Gère le focus à l'intérieur du modal lors de la navigation au clavier.
+ 
 function focusInModal(e) {
     e.preventDefault();
     let index = focusables.findIndex(f => f === modal.querySelector(":focus"));
@@ -156,26 +153,16 @@ window.addEventListener("keydown", function (e) {
     if (e.key === "Escape" || e.key === "Esc") {
         closeModal(e);
     }
-
     if (e.key === "Tab" && modal !== null) {
         focusInModal(e);
     }
 });
 
 window.addEventListener('DOMContentLoaded', (event) => {
-    console.log('DOM entièrement chargé et analysé');
-
     const imageTitle = document.getElementById('imageTitle');
     const categoryList = document.getElementById('categorylist');
     const fileInputModal2 = document.getElementById('fileInputModal2');
     const validateButton = document.getElementById('validateButton');
-
-    console.log(fileInputModal2); 
-
-    fileInputModal2.addEventListener('change', function() {
-        console.log("Événement change déclenché pour fileInputModal2");
-        updateImageUploadContainer(this);
-    });
 
     function checkInputs() {
         const title = imageTitle.value.trim();
@@ -198,35 +185,26 @@ window.addEventListener('DOMContentLoaded', (event) => {
     checkInputs();
 });
 
-        
- function updateImageUploadContainer(fileInput) {
-    console.log("Mise à jour du conteneur d'images");
+
+ //Met à jour le conteneur d'upload d'image avec l'image sélectionnée.
+ 
+function updateImageUploadContainer(fileInput) {
     const imageUploadContainer = document.getElementById('image-upload-container');
-    console.log(imageUploadContainer); 
 
     if (fileInput.files && fileInput.files[0]) {
         const reader = new FileReader();
         reader.onload = function (e) {
-            console.log("Fichier chargé"); 
             const image = new Image();
             image.src = e.target.result;
             image.onload = function () {
-                console.log("Image chargée dans le navigateur"); 
                 while (imageUploadContainer.firstChild) {
                     imageUploadContainer.removeChild(imageUploadContainer.firstChild);
                 }
                 imageUploadContainer.appendChild(image);
-                console.log("Image ajoutée au conteneur"); 
-            };
-            image.onerror = function () {
-                console.error('Erreur lors du chargement de l\'image');
             };
         };
 
         reader.readAsDataURL(fileInput.files[0]);
-        console.log("Début de la lecture du fichier");
-    } else {
-        console.log("Aucun fichier sélectionné");
     }
 }
 
@@ -239,50 +217,41 @@ if (addImageBtn && fileInputModal2) {
         if (!fileInputOpened) {
             fileInputOpened = true;
             setTimeout(() => {
-                fileInputModal2.click(); 
+                fileInputModal2.click();
             }, 0);
         }
     });
 
     fileInputModal2.addEventListener('change', function() {
-        console.log("Événement change déclenché pour fileInputModal2");
         updateImageUploadContainer(fileInputModal2);
         fileInputOpened = false; 
     });
 }
 
+
+ // Ajoute une image au portfolio.
+ 
 async function addImageToPortfolio(file) {
-    const reader = new FileReader();
-    reader.onload = async function(e) {
-        const imageTitle = document.getElementById('imageTitle').value;
-        const category = document.getElementById('categorylist').value;
-        const formData = new FormData();
+    const imageTitle = document.getElementById('imageTitle').value;
+    const category = document.getElementById('categorylist').value;
+    const formData = new FormData();
 
-        formData.append("image", file);
-        formData.append("title", imageTitle);
-        formData.append("category", category);
+    formData.append("image", file);
+    formData.append("title", imageTitle);
+    formData.append("category", category);
 
-        try {
-            const response = await fetch(`http://localhost:5678/api/works`, {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                }
-            });
-    
-            if (response.ok) {
-                console.log("Travail ajouté avec succès");
-            } else {
-                console.error("Erreur lors de l'ajout du travail");
+    try {
+        const response = await fetch(`http://localhost:5678/api/works`, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`,
             }
-        } catch (error) {
-            console.error("Erreur lors de la communication avec l'API lors de l'ajout:", error);
-        }
-    };
-    reader.readAsDataURL(file);
+        });
+    } catch (error) {
+        console.error("Erreur lors de l'ajout de l'image:", error);
+    }
 }
-
 
 document.addEventListener('DOMContentLoaded', (event) => {
     const fileInputModal2 = document.getElementById('fileInputModal2'); 
@@ -292,33 +261,6 @@ document.addEventListener('DOMContentLoaded', (event) => {
         if (fileInputModal2 && fileInputModal2.files.length > 0) {
             addImageToPortfolio(fileInputModal2.files[0]);
             closeModal(e, document.getElementById('modal2'));
-        } else {
-            console.error("Aucun fichier sélectionné.");
         }
     });
-});
-
-function openModalById(modalId) {
-    const modal = document.getElementById(modalId);
-    if (modal) {
-        modal.style.display = null; // Affiche le modal
-        modal.setAttribute("aria-hidden", "false");
-        modal.setAttribute("aria-modal", "true");
-    }
-}
-
-// Fonction pour fermer le modal actuellement ouvert
-function closeModalById(modalId) {
-    const modal = document.getElementById(modalId);
-    if (modal) {
-        modal.style.display = "none"; // Cache le modal
-        modal.setAttribute("aria-hidden", "true");
-        modal.removeAttribute("aria-modal");
-    }
-}
-
-// Gestionnaire d'événements pour le bouton js-modal-return
-document.querySelector('.js-modal-return').addEventListener('click', function() {
-    closeModalById('modal2'); // Ferme modal2
-    openModalById('modal1'); // Ouvre modal1
 });

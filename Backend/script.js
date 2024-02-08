@@ -1,13 +1,19 @@
+// Initialisation d'une variable globale pour stocker les données des travaux
 let data;
 
-// Fonction pour mettre à jour le portfolio
+// Fonction pour mettre à jour le portfolio avec de nouveaux travaux.
 function mettreAJourPortfolio(travaux) {
     const portfolio = document.getElementById('portfolio');
+    // Ajoute la classe "gallery" pour appliquer le style de la galerie
     portfolio.classList.add("gallery");
 
+    // Supprime tous les éléments enfants actuels pour nettoyer l'affichage
     while (portfolio.firstChild) {
         portfolio.removeChild(portfolio.firstChild);
-    }   travaux.forEach(travail => {
+    }
+
+    // Crée et ajoute les nouveaux éléments pour chaque travail
+    travaux.forEach(travail => {
         const figure = document.createElement('figure');
         const img = document.createElement('img');
         const figcaption = document.createElement('figcaption');
@@ -22,83 +28,64 @@ function mettreAJourPortfolio(travaux) {
     });
 }
 
+// Fonction principale pour récupérer et afficher les travaux depuis une API.
+(function fetchWorksAndDisplay() {
+    fetch('http://localhost:5678/api/works')
+        .then(response => response.json())
+        .then(responseData => {
+            data = responseData; // Stocke les données récupérées
 
-/*Appel API avec fetch*/
-fetch('http://localhost:5678/api/works')
-    .then(response => response.json())
-    .then(responseData => {
+            // Nettoie le contenu actuel de la galerie
+            const portfolio = document.getElementById('portfolio');
+            while (portfolio.firstChild) {
+                portfolio.removeChild(portfolio.firstChild);
+            }
 
-        data = responseData;
+            // Crée une nouvelle div "gallery" et ajoute les travaux récupérés
+            const gallerydiv = document.createElement('div');
+            gallerydiv.classList.add("gallery");
+            data.forEach(travail => {
+                const figure = document.createElement('figure');
+                const img = document.createElement('img');
+                img.src = travail.imageUrl;
+                img.alt = travail.title;
+                img.id = travail.id; // Assurez-vous que l'ID est unique dans le document
+                const figcaption = document.createElement('figcaption');
+                figcaption.textContent = travail.title;
 
-        /*Suppression travaux statiques sur le HTML*/
-        while (portfolio.firstChild) {
-            portfolio.removeChild(portfolio.firstChild);
-        }
-        
-
-        /*Ajout dynamique travaux récupérés*/
-
-       // Ajout dynamique travaux récupérés
-        const gallerydiv = document.createElement('div');
-        gallerydiv.classList.add("gallery");
-        data.forEach(travail => {
-        const figure = document.createElement('figure');
-        const img = document.createElement('img');
-        img.src = travail.imageUrl;
-        img.alt = travail.title;
-        img.id = travail.id; // Assurez-vous que l'ID est unique dans le document
-        const figcaption = document.createElement('figcaption');
-        figcaption.textContent = travail.title;
-
-        figure.appendChild(img);
-        figure.appendChild(figcaption);
-        gallerydiv.appendChild(figure);
-        });
-        portfolio.appendChild(gallerydiv);
-
-        initialiserCategories(data);
-
-        initializeMiniGallery();
-        document.getElementById('fileInputModal2').addEventListener('change', function() {
-            updateImageUploadContainer(this);
-        });
-    })
-    .catch(error => console.error('Erreur lors de la récupération des travaux:', error));
-
-    document.addEventListener('DOMContentLoaded', () => {
-        if (localStorage.getItem("loggedIn")) {
-            document.getElementById('editModeBanner').style.display = 'flex';
-            localStorage.removeItem("loggedIn"); 
-        }
-    });
-    
-    document.addEventListener('DOMContentLoaded', () => {
-        const loginLogoutLink = document.getElementById('loginLogoutLink');
-    
-        if (localStorage.getItem('token')) {
-            loginLogoutLink.textContent = 'logout';
-            loginLogoutLink.href = '#';
-            loginLogoutLink.addEventListener('click', (event) => {
-                event.preventDefault();
-                localStorage.removeItem('token');
-                window.location.href = 'index.html'; 
+                figure.appendChild(img);
+                figure.appendChild(figcaption);
+                gallerydiv.appendChild(figure);
             });
-        }
-    });
+            portfolio.appendChild(gallerydiv);
 
+            // Initialisations supplémentaires (remplacer par les fonctions réelles si disponibles)
+            document.getElementById('fileInputModal2').addEventListener('change', function() {
+                // Fonction hypothétique pour gérer la mise à jour de l'upload d'image
+                updateImageUploadContainer(this); 
+            });
+        })
+        .catch(error => console.error('Erreur lors de la récupération des travaux:', error));
+})();
+
+// Gestion de l'affichage conditionnel en fonction de l'état de connexion de l'utilisateur
 document.addEventListener('DOMContentLoaded', () => {
-    const editLinkContainer = document.getElementById('editLinkContainer'); // Récupère le conteneur
+    if (localStorage.getItem("loggedIn")) {
+        document.getElementById('editModeBanner').style.display = 'flex';
+        localStorage.removeItem("loggedIn"); 
+    }
 
-    if (!localStorage.getItem('token')) {
-        if (editLinkContainer) {
-            editLinkContainer.style.display = 'none';
-        }
+    const loginLogoutLink = document.getElementById('loginLogoutLink');
+    if (localStorage.getItem('token')) {
+        loginLogoutLink.textContent = 'logout';
+        loginLogoutLink.href = '#';
+        loginLogoutLink.addEventListener('click', (event) => {
+            event.preventDefault();
+            localStorage.removeItem('token');
+            window.location.href = 'index.html';
+        });
     } else {
-        if (editLinkContainer) {
-            editLinkContainer.style.display = 'block';
-        }
+        const editLinkContainer = document.getElementById('editLinkContainer');
+        editLinkContainer.style.display = localStorage.getItem('token') ? 'block' : 'none';
     }
 });
-
-
-    
