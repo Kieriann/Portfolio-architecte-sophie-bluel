@@ -53,6 +53,7 @@ function initializeMiniGallery() {
             const workId = image.getAttribute("id")
             deleteIcon.addEventListener("click", function() {
                 deleteImageFromGallery(workId);
+                e.preventDefault()
             });
             miniatureContainer.appendChild(deleteIcon);
             miniGallery.appendChild(miniatureContainer);
@@ -250,7 +251,7 @@ async function addImageToPortfolio(file) {
         });
     } catch (error) {
         console.error("Erreur lors de l'ajout de l'image:", error);
-    }
+    }    
 }
 
 document.addEventListener('DOMContentLoaded', (event) => {
@@ -260,7 +261,8 @@ document.addEventListener('DOMContentLoaded', (event) => {
     validateButton.addEventListener('click', function(e) {
         if (fileInputModal2 && fileInputModal2.files.length > 0) {
             addImageToPortfolio(fileInputModal2.files[0]);
-            closeModal(e, document.getElementById('modal2'));
+            e.preventDefault();
+            //closeModal(e, document.getElementById('modal2'));
         }
     });
 });

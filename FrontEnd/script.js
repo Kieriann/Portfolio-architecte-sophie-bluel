@@ -44,29 +44,34 @@ function mettreAJourPortfolio(travaux) {
             // Crée une nouvelle div "gallery" et ajoute les travaux récupérés
             const gallerydiv = document.createElement('div');
             gallerydiv.classList.add("gallery");
-            data.forEach(travail => {
-                const figure = document.createElement('figure');
-                const img = document.createElement('img');
-                img.src = travail.imageUrl;
-                img.alt = travail.title;
-                img.id = travail.id; // Assurez-vous que l'ID est unique dans le document
-                const figcaption = document.createElement('figcaption');
-                figcaption.textContent = travail.title;
-
-                figure.appendChild(img);
-                figure.appendChild(figcaption);
-                gallerydiv.appendChild(figure);
-            });
             portfolio.appendChild(gallerydiv);
+            data.forEach(travail => addImageInDOM(travail));
+            
 
-            // Initialisations supplémentaires (remplacer par les fonctions réelles si disponibles)
             document.getElementById('fileInputModal2').addEventListener('change', function() {
-                // Fonction hypothétique pour gérer la mise à jour de l'upload d'image
                 updateImageUploadContainer(this); 
             });
         })
         .catch(error => console.error('Erreur lors de la récupération des travaux:', error));
 })();
+
+function addImageInDOM (travail){
+        const gallerydiv = document.getElementsByClassName("gallery")   
+        const figure = document.createElement('figure');
+        const img = document.createElement('img');
+        img.src = travail.imageUrl;
+        img.alt = travail.title;
+        img.id = travail.id; 
+        const figcaption = document.createElement('figcaption');
+        figcaption.textContent = travail.title;
+
+        figure.appendChild(img);
+        figure.appendChild(figcaption);
+        gallerydiv[0].appendChild(figure);
+}
+
+
+
 
 // Gestion de l'affichage conditionnel en fonction de l'état de connexion de l'utilisateur
 document.addEventListener('DOMContentLoaded', () => {
