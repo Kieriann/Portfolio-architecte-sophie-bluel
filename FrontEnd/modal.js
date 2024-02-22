@@ -3,10 +3,9 @@ const focusableSelector = "button, a, input, textarea";
 let focusables = [];
 let previouslyFocusedElement = null;
 let miniGalleryInitialized = false;
+let fileInputOpened = false;
 
-
- //Ouvre un modal et initialise le focus sur le premier élément focusable.
- 
+// Ouvre un modal et initialise le focus sur le premier élément focusable.
 function openModal(e) {
     e.preventDefault();
     modal = document.querySelector(e.target.getAttribute("href"));
@@ -31,9 +30,7 @@ function openModal(e) {
     });
 }
 
-
- //Initialise une mini galerie d'images.
- 
+// Initialise une mini galerie d'images.
 function initializeMiniGallery() {
     const mainGallery = document.getElementById('portfolio');
     const miniGallery = document.getElementById('miniGallery');
@@ -50,10 +47,10 @@ function initializeMiniGallery() {
 
             const deleteIcon = document.createElement('i');
             deleteIcon.classList.add('fas', 'fa-trash-alt', 'delete-icon');
-            const workId = image.getAttribute("id")
-            deleteIcon.addEventListener("click", function() {
+            const workId = image.getAttribute("id");
+            deleteIcon.addEventListener("click", function(e) {
                 deleteImageFromGallery(workId);
-                e.preventDefault()
+                e.preventDefault();
             });
             miniatureContainer.appendChild(deleteIcon);
             miniGallery.appendChild(miniatureContainer);
@@ -63,9 +60,7 @@ function initializeMiniGallery() {
     }    
 }
 
-
- //Ouvre un second modal.
- 
+// Ouvre un second modal.
 function openModal2() {
     const modal2 = document.getElementById('modal2');
     modal2.style.display = null;
@@ -84,9 +79,7 @@ function openModal2() {
     });
 }
 
-
- //Supprime une image de la galerie.
- 
+// Supprime une image de la galerie.
 async function deleteImageFromGallery(workId) {
     try {
         const response = await fetch(`http://localhost:5678/api/works/${workId}`, {
@@ -100,9 +93,7 @@ async function deleteImageFromGallery(workId) {
     }
 }
 
-
- // Ferme le modal actuellement ouvert.
- 
+// Ferme le modal actuellement ouvert.
 function closeModal(e, modalElement = null) {
     const modalToClose = modalElement || modal;
     if (modalToClose === null) return;
@@ -119,16 +110,12 @@ function closeModal(e, modalElement = null) {
     modal = null;
 }
 
-
- //Empêche la propagation de l'événement.
- 
+// Empêche la propagation de l'événement.
 function stopPropagation(e) {
     e.stopPropagation();
 }
 
-
-  //Gère le focus à l'intérieur du modal lors de la navigation au clavier.
- 
+// Gère le focus à l'intérieur du modal lors de la navigation au clavier.
 function focusInModal(e) {
     e.preventDefault();
     let index = focusables.findIndex(f => f === modal.querySelector(":focus"));
@@ -159,6 +146,27 @@ window.addEventListener("keydown", function (e) {
     }
 });
 
+// Met à jour le conteneur d'upload d'image avec l'image sélectionnée.
+function updateImageUploadContainer(fileInput) {
+    const imageUploadContainer = document.getElementById('image-upload-container');
+    
+    // Efface l'aperçu existant
+    while (imageUploadContainer.firstChild) {
+        imageUploadContainer.removeChild(imageUploadContainer.firstChild);
+    }
+
+    if (fileInput.files && fileInput.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const image = new Image();
+            image.src = e.target.result;
+            imageUploadContainer.appendChild(image);
+        };
+        reader.readAsDataURL(fileInput.files[0]);
+    }
+}
+
+// Initialisation après le chargement du DOM pour les champs de formulaire et boutons.
 window.addEventListener('DOMContentLoaded', (event) => {
     const imageTitle = document.getElementById('imageTitle');
     const categoryList = document.getElementById('categorylist');
@@ -184,62 +192,64 @@ window.addEventListener('DOMContentLoaded', (event) => {
     fileInputModal2.addEventListener('change', checkInputs);
 
     checkInputs();
-});
-
-
- //Met à jour le conteneur d'upload d'image avec l'image sélectionnée.
- 
-function updateImageUploadContainer(fileInput) {
-    const imageUploadContainer = document.getElementById('image-upload-container');
-
-    if (fileInput.files && fileInput.files[0]) {
-        const reader = new FileReader();
-        reader.onload = function (e) {
-            const image = new Image();
-            image.src = e.target.result;
-            image.onload = function () {
-                while (imageUploadContainer.firstChild) {
-                    imageUploadContainer.removeChild(imageUploadContainer.firstChild);
-                }
-                imageUploadContainer.appendChild(image);
-            };
-        };
-
-        reader.readAsDataURL(fileInput.files[0]);
-    }
-}
-
-const addImageBtn = document.getElementById('addImageBtn');
-const fileInputModal2 = document.getElementById('fileInputModal2'); 
-let fileInputOpened = false; 
-
-if (addImageBtn && fileInputModal2) {
-    addImageBtn.addEventListener('click', function () {
-        if (!fileInputOpened) {
-            fileInputOpened = true;
-            setTimeout(() => {
-                fileInputModal2.click();
-            }, 0);
+    validateButton.addEventListener('click', function(e) {
+        e.preventDefault(); // Empêche le rechargement de la page pour un formulaire
+        const file = fileInputModal2.files[0]; // Prend le premier fichier sélectionné
+        if (file) { // Vérifie si un fichier est sélectionné
+            addImageToPortfolio(file); // Appelle la fonction pour ajouter l'image
         }
     });
+});
 
-    fileInputModal2.addEventListener('change', function() {
-        updateImageUploadContainer(fileInputModal2);
-        fileInputOpened = false; 
-    });
+// Fonction pour réinitialiser et recréer les éléments dans le modal
+function clearModal2Content() {
+    // Réinitialise l'aperçu de l'image
+    const imageUploadContainer = document.getElementById('image-upload-container');
+    while (imageUploadContainer.firstChild) {
+        imageUploadContainer.removeChild(imageUploadContainer.firstChild);
+    }
+
+    // Réinitialise les champs de formulaire
+    document.getElementById('imageTitle').value = '';
+    document.getElementById('categorylist').selectedIndex = 0;
+
+    // Recrée le label pour fileInputModal2
+    const labelForFileInput = document.createElement('label');
+    labelForFileInput.setAttribute('for', 'fileInputModal2');
+    labelForFileInput.className = 'image-upload-label';
+    labelForFileInput.innerHTML = '<i class="fa-solid fa-image"></i>';
+    imageUploadContainer.appendChild(labelForFileInput);
+
+    // Recrée et ajoute le bouton 'addImageBtn'
+    const addImageBtn = document.createElement('button');
+    addImageBtn.textContent = '+ Ajouter photo';
+    addImageBtn.classList.add('addpicgris'); 
+    addImageBtn.id = 'addImageBtn';
+    imageUploadContainer.appendChild(addImageBtn);
+
+    // Ajoute de nouveau le fileInputModal2 pour éviter les problèmes de référence nulle
+    const newFileInputModal2 = document.createElement('input');
+    newFileInputModal2.type = 'file';
+    newFileInputModal2.id = 'fileInputModal2';
+    newFileInputModal2.style.display = 'none'; // Assurez-vous que l'input reste caché
+    document.body.appendChild(newFileInputModal2); // ou append à un conteneur spécifique si nécessaire
+
+    // Réinitialise le statut d'ouverture de fileInput pour permettre de nouvelles interactions
+    fileInputOpened = false;
+
+    // Réinitialise et attache les événements nécessaires
+    initializeAddImageButton();
 }
 
-
- // Ajoute une image au portfolio.
- 
+// Ajoute une image au portfolio.
 async function addImageToPortfolio(file) {
-    const imageTitle = document.getElementById('imageTitle').value;
-    const category = document.getElementById('categorylist').value;
+    const imageTitleValue = document.getElementById('imageTitle').value.trim();
+    const categoryValue = document.getElementById('categorylist').value;
+    
     const formData = new FormData();
-
     formData.append("image", file);
-    formData.append("title", imageTitle);
-    formData.append("category", category);
+    formData.append("title", imageTitleValue);
+    formData.append("category", categoryValue);
 
     try {
         const response = await fetch(`http://localhost:5678/api/works`, {
@@ -249,20 +259,43 @@ async function addImageToPortfolio(file) {
                 'Authorization': `Bearer ${localStorage.getItem('token')}`,
             }
         });
+
+        if (response.ok) {
+            const imageDetails = await response.json();
+            // Supposons que ces fonctions ajoutent les détails de l'image au DOM et à la mini galerie respectivement
+            // addImageInDOM(imageDetails); 
+            // addImageInMiniGallery(imageDetails); 
+            clearModal2Content(); 
+        } else {
+            console.error("Erreur lors de l'ajout de l'image: réponse non OK du serveur");
+        }
     } catch (error) {
         console.error("Erreur lors de l'ajout de l'image:", error);
-    }    
+    }
 }
 
-document.addEventListener('DOMContentLoaded', (event) => {
-    const fileInputModal2 = document.getElementById('fileInputModal2'); 
-    const validateButton = document.getElementById('validateButton');
+// Fonction pour initialiser le bouton d'ajout d'image et l'input de fichier
+function initializeAddImageButton() {
+    const fileInputModal2 = document.getElementById('fileInputModal2');
+    const addImageBtn = document.getElementById('addImageBtn');
 
-    validateButton.addEventListener('click', function(e) {
-        if (fileInputModal2 && fileInputModal2.files.length > 0) {
-            addImageToPortfolio(fileInputModal2.files[0]);
-            e.preventDefault();
-            //closeModal(e, document.getElementById('modal2'));
-        }
-    });
-});
+    if (addImageBtn) {
+        addImageBtn.addEventListener('click', function () {
+            if (!fileInputOpened) {
+                fileInputOpened = true;
+                setTimeout(() => {
+                    fileInputModal2.click();
+                }, 0);
+            }
+        });
+    }
+
+    if (fileInputModal2) {
+        fileInputModal2.addEventListener('change', function() {
+            updateImageUploadContainer(fileInputModal2);
+            fileInputOpened = false;
+        });
+    }
+}
+
+window.addEventListener('DOMContentLoaded', initializeAddImageButton);

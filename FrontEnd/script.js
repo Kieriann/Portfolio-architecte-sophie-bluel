@@ -1,3 +1,4 @@
+
 // Initialisation d'une variable globale pour stocker les données des travaux
 let data;
 
@@ -49,7 +50,20 @@ function mettreAJourPortfolio(travaux) {
             
 
             document.getElementById('fileInputModal2').addEventListener('change', function() {
-                updateImageUploadContainer(this); 
+                let imageUploadContainer = document.getElementById('image-upload-container');
+
+                while (imageUploadContainer.firstChild) {
+                    imageUploadContainer.removeChild(imageUploadContainer.firstChild);
+                }
+                if (fileInput.files && fileInput.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const image = new Image();
+                        image.src = e.target.result;
+                        imageUploadContainer.appendChild(image);
+                    };
+                    reader.readAsDataURL(fileInput.files[0]);
+                }
             });
         })
         .catch(error => console.error('Erreur lors de la récupération des travaux:', error));
@@ -94,3 +108,4 @@ document.addEventListener('DOMContentLoaded', () => {
         editLinkContainer.style.display = localStorage.getItem('token') ? 'block' : 'none';
     }
 });
+
