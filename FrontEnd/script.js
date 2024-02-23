@@ -1,4 +1,3 @@
-
 // Initialisation d'une variable globale pour stocker les données des travaux
 let data;
 
@@ -21,6 +20,7 @@ function mettreAJourPortfolio(travaux) {
 
         img.src = travail.imageUrl;
         img.alt = travail.title;
+        img.id = `work-${travail.id}`; // Utilise l'attribut id pour identifier un travail
         figcaption.textContent = travail.title;
 
         figure.appendChild(img);
@@ -47,7 +47,6 @@ function mettreAJourPortfolio(travaux) {
             gallerydiv.classList.add("gallery");
             portfolio.appendChild(gallerydiv);
             data.forEach(travail => addImageInDOM(travail));
-            
 
             document.getElementById('fileInputModal2').addEventListener('change', function() {
                 let imageUploadContainer = document.getElementById('image-upload-container');
@@ -69,23 +68,21 @@ function mettreAJourPortfolio(travaux) {
         .catch(error => console.error('Erreur lors de la récupération des travaux:', error));
 })();
 
-function addImageInDOM (travail){
-        const gallerydiv = document.getElementsByClassName("gallery")   
-        const figure = document.createElement('figure');
-        const img = document.createElement('img');
-        img.src = travail.imageUrl;
-        img.alt = travail.title;
-        img.id = travail.id; 
-        const figcaption = document.createElement('figcaption');
-        figcaption.textContent = travail.title;
+function addImageInDOM(travail) {
+    const gallerydiv = document.getElementsByClassName("gallery")[0]; 
+    const figure = document.createElement('figure');
+    const img = document.createElement('img');
+    img.src = travail.imageUrl;
+    img.alt = travail.title;
+    img.id = `work-${travail.id}`; // Identifie le travail avec un id unique
 
-        figure.appendChild(img);
-        figure.appendChild(figcaption);
-        gallerydiv[0].appendChild(figure);
+    const figcaption = document.createElement('figcaption');
+    figcaption.textContent = travail.title;
+
+    figure.appendChild(img);
+    figure.appendChild(figcaption);
+    gallerydiv.appendChild(figure);
 }
-
-
-
 
 // Gestion de l'affichage conditionnel en fonction de l'état de connexion de l'utilisateur
 document.addEventListener('DOMContentLoaded', () => {
@@ -108,4 +105,3 @@ document.addEventListener('DOMContentLoaded', () => {
         editLinkContainer.style.display = localStorage.getItem('token') ? 'block' : 'none';
     }
 });
-

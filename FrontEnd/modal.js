@@ -5,7 +5,6 @@ let previouslyFocusedElement = null;
 let miniGalleryInitialized = false;
 let fileInputOpened = false;
 
-// Ouvre un modal et initialise le focus sur le premier élément focusable.
 function openModal(e) {
     e.preventDefault();
     modal = document.querySelector(e.target.getAttribute("href"));
@@ -26,19 +25,20 @@ function openModal(e) {
 
     document.getElementById('addpic').addEventListener('click', function () {
         closeModal(e);
-        openModal2(); 
+        openModal2();
     });
 }
 
-// Initialise une mini galerie d'images.
 function initializeMiniGallery() {
     const mainGallery = document.getElementById('portfolio');
     const miniGallery = document.getElementById('miniGallery');
 
-    if (!miniGalleryInitialized) {
+    if (!window.miniGalleryInitialized) {
         const miniatures = mainGallery.querySelectorAll('img');
 
         miniatures.forEach(image => {
+            const workId = image.getAttribute("id");
+
             const miniatureContainer = document.createElement('div');
             miniatureContainer.classList.add('miniature-container');
 
@@ -47,20 +47,20 @@ function initializeMiniGallery() {
 
             const deleteIcon = document.createElement('i');
             deleteIcon.classList.add('fas', 'fa-trash-alt', 'delete-icon');
-            const workId = image.getAttribute("id");
             deleteIcon.addEventListener("click", function(e) {
-                deleteImageFromGallery(workId);
                 e.preventDefault();
+                e.stopPropagation();
+                deleteImageFromGallery(workId);
             });
+
             miniatureContainer.appendChild(deleteIcon);
             miniGallery.appendChild(miniatureContainer);
         });
 
-        miniGalleryInitialized = true;
-    }    
+        window.miniGalleryInitialized = true;
+    }
 }
 
-// Ouvre un second modal.
 function openModal2() {
     const modal2 = document.getElementById('modal2');
     modal2.style.display = null;
@@ -79,8 +79,8 @@ function openModal2() {
     });
 }
 
-// Supprime une image de la galerie.
 async function deleteImageFromGallery(workId) {
+    console.log(`Début de la suppression pour l'ID : ${workId}`); // Log pour début de fonction
     try {
         const response = await fetch(`http://localhost:5678/api/works/${workId}`, {
             method: 'DELETE',
@@ -88,12 +88,37 @@ async function deleteImageFromGallery(workId) {
                 'Authorization': `Bearer ${localStorage.getItem('token')}`
             }
         });
+
+        console.log(`Statut de la réponse : ${response.status}`); // Log pour vérifier le statut de la réponse
+
+        if (response.status === 204) {
+            console.log("Suppression réussie, pas de contenu dans la réponse."); // Confirmation de suppression réussie
+
+            // Supprime la miniature dans modal1
+            document.querySelectorAll(`#${workId}`).forEach(element => {
+                const container = element.closest('.miniature-container');
+                if (container) {
+                    container.remove(); // Supprime la miniature
+                    console.log(`Miniature ${workId} supprimée du modal`); // Log pour confirmation de suppression dans le modal
+                }
+            });
+
+            // Supprime l'élément correspondant dans la galerie portfolio
+            const galleryElement = document.getElementById(workId);
+            if (galleryElement) {
+                galleryElement.closest('figure').remove(); // Supprime l'élément de la galerie
+                console.log(`Élément ${workId} supprimé de la galerie`); // Log pour confirmation de suppression dans la galerie
+            }
+
+        } else {
+            // Gérer les autres réponses
+            console.error(`Erreur lors de la suppression: statut réponse ${response.status}`);
+        }
     } catch (error) {
         console.error("Erreur lors de la suppression de l'image:", error);
     }
+    
 }
-
-// Ferme le modal actuellement ouvert.
 function closeModal(e, modalElement = null) {
     const modalToClose = modalElement || modal;
     if (modalToClose === null) return;
@@ -110,12 +135,10 @@ function closeModal(e, modalElement = null) {
     modal = null;
 }
 
-// Empêche la propagation de l'événement.
 function stopPropagation(e) {
     e.stopPropagation();
 }
 
-// Gère le focus à l'intérieur du modal lors de la navigation au clavier.
 function focusInModal(e) {
     e.preventDefault();
     let index = focusables.findIndex(f => f === modal.querySelector(":focus"));
@@ -137,7 +160,7 @@ document.querySelectorAll(".js-modal").forEach(a => {
     a.addEventListener("click", openModal);
 });
 
-window.addEventListener("keydown", function (e) {
+window.addEventListener("keydown", function(e) {
     if (e.key === "Escape" || e.key === "Esc") {
         closeModal(e);
     }
@@ -231,14 +254,52 @@ function clearModal2Content() {
     const newFileInputModal2 = document.createElement('input');
     newFileInputModal2.type = 'file';
     newFileInputModal2.id = 'fileInputModal2';
-    newFileInputModal2.style.display = 'none'; // Assurez-vous que l'input reste caché
-    document.body.appendChild(newFileInputModal2); // ou append à un conteneur spécifique si nécessaire
+    newFileInputModal2.style.display = 'none'; 
+    document.body.appendChild(newFileInputModal2); 
 
     // Réinitialise le statut d'ouverture de fileInput pour permettre de nouvelles interactions
     fileInputOpened = false;
 
     // Réinitialise et attache les événements nécessaires
     initializeAddImageButton();
+}
+
+function addImageInDOM(travail) {
+    const gallerydiv = document.getElementsByClassName("gallery")[0];
+    const figure = document.createElement('figure');
+    const img = document.createElement('img');
+    img.src = travail.imageUrl;
+    img.alt = travail.title;
+    img.setAttribute('data-id', travail.id); 
+    const figcaption = document.createElement('figcaption');
+    figcaption.textContent = travail.title;
+
+    figure.appendChild(img);
+    figure.appendChild(figcaption);
+    gallerydiv.appendChild(figure);
+}
+
+function addImageInMiniGallery(imageDetails) {
+    const miniGallery = document.getElementById('miniGallery');
+    const miniatureContainer = document.createElement('div');
+    miniatureContainer.classList.add('miniature-container');
+
+    const img = document.createElement('img');
+    img.src = imageDetails.imageUrl;
+    img.alt = imageDetails.title;
+    img.setAttribute('data-id', imageDetails.id); // Ajoute l'attribut data-id
+    miniatureContainer.appendChild(img);
+
+    // Ajout du bouton de suppression avec l'écouteur d'événements déjà configuré
+    const deleteIcon = document.createElement('i');
+    deleteIcon.classList.add('fas', 'fa-trash-alt', 'delete-icon');
+    deleteIcon.addEventListener('click', function(e) {
+        deleteImageFromGallery(imageDetails.id);
+        e.preventDefault();
+    });
+    miniatureContainer.appendChild(deleteIcon);
+
+    miniGallery.appendChild(miniatureContainer);
 }
 
 // Ajoute une image au portfolio.
@@ -262,9 +323,19 @@ async function addImageToPortfolio(file) {
 
         if (response.ok) {
             const imageDetails = await response.json();
-            // Supposons que ces fonctions ajoutent les détails de l'image au DOM et à la mini galerie respectivement
-            // addImageInDOM(imageDetails); 
-            // addImageInMiniGallery(imageDetails); 
+             addImageInDOM(imageDetails); 
+             document.querySelectorAll('.gallery img').forEach(img => {
+                img.addEventListener('click', function() {
+                    const id = this.getAttribute('data-id');
+                
+                    const travail = data.find(travail => travail.id == id);
+                    if (travail) {
+                        // Logique pour afficher les détails du travail dans la modale
+                        console.log(travail); 
+                    }
+                });
+            });
+             addImageInMiniGallery(imageDetails); 
             clearModal2Content(); 
         } else {
             console.error("Erreur lors de l'ajout de l'image: réponse non OK du serveur");
