@@ -84,24 +84,31 @@ function addImageInDOM(travail) {
     gallerydiv.appendChild(figure);
 }
 
-// Gestion de l'affichage conditionnel en fonction de l'état de connexion de l'utilisateur
 document.addEventListener('DOMContentLoaded', () => {
-    if (localStorage.getItem("loggedIn")) {
-        document.getElementById('editModeBanner').style.display = 'flex';
-        localStorage.removeItem("loggedIn"); 
-    }
-
+    
+    const editModeBanner = document.getElementById('editModeBanner');
     const loginLogoutLink = document.getElementById('loginLogoutLink');
+    const editLinkContainer = document.getElementById('editLinkContainer');
+
     if (localStorage.getItem('token')) {
+        // L'utilisateur est connecté
+        editModeBanner.style.display = 'flex'; // Affiche le bandeau de mode édition
         loginLogoutLink.textContent = 'logout';
         loginLogoutLink.href = '#';
         loginLogoutLink.addEventListener('click', (event) => {
             event.preventDefault();
-            localStorage.removeItem('token');
-            window.location.href = 'index.html';
+            localStorage.removeItem('token'); // Supprime le token lors de la déconnexion
+            window.location.href = 'index.html'; // Redirige vers la page principale
         });
+        editLinkContainer.style.display = 'block'; 
     } else {
-        const editLinkContainer = document.getElementById('editLinkContainer');
-        editLinkContainer.style.display = localStorage.getItem('token') ? 'block' : 'none';
+        // L'utilisateur n'est pas connecté
+        editModeBanner.style.display = 'none'; // Cache le bandeau de mode édition
+        loginLogoutLink.textContent = 'login';
+        loginLogoutLink.href = 'connexion.html'; 
+        editLinkContainer.style.display = 'none'; 
     }
 });
+
+
+

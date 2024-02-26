@@ -80,9 +80,12 @@ function openModal2() {
 }
 
 async function deleteImageFromGallery(workId) {
-    console.log(`Début de la suppression pour l'ID : ${workId}`); // Log pour début de fonction
+    const numericId = workId.replace('work-', '');
+
+    console.log(`Début de la suppression pour l'ID numérique : ${numericId}`); // Log pour début de fonction avec l'ID numérique
+
     try {
-        const response = await fetch(`http://localhost:5678/api/works/${workId}`, {
+        const response = await fetch(`http://localhost:5678/api/works/${numericId}`, {
             method: 'DELETE',
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -95,21 +98,20 @@ async function deleteImageFromGallery(workId) {
             console.log("Suppression réussie, pas de contenu dans la réponse."); // Confirmation de suppression réussie
 
             // Supprime la miniature dans modal1
-            document.querySelectorAll(`#${workId}`).forEach(element => {
+            document.querySelectorAll(`#work-${numericId}`).forEach(element => {
                 const container = element.closest('.miniature-container');
                 if (container) {
                     container.remove(); // Supprime la miniature
-                    console.log(`Miniature ${workId} supprimée du modal`); // Log pour confirmation de suppression dans le modal
+                    console.log(`Miniature work-${numericId} supprimée du modal`); // Log pour confirmation de suppression dans le modal
                 }
             });
 
             // Supprime l'élément correspondant dans la galerie portfolio
-            const galleryElement = document.getElementById(workId);
+            const galleryElement = document.getElementById(`work-${numericId}`);
             if (galleryElement) {
                 galleryElement.closest('figure').remove(); // Supprime l'élément de la galerie
-                console.log(`Élément ${workId} supprimé de la galerie`); // Log pour confirmation de suppression dans la galerie
+                console.log(`Élément work-${numericId} supprimé de la galerie`); // Log pour confirmation de suppression dans la galerie
             }
-
         } else {
             // Gérer les autres réponses
             console.error(`Erreur lors de la suppression: statut réponse ${response.status}`);
@@ -117,8 +119,9 @@ async function deleteImageFromGallery(workId) {
     } catch (error) {
         console.error("Erreur lors de la suppression de l'image:", error);
     }
-    
 }
+
+
 function closeModal(e, modalElement = null) {
     const modalToClose = modalElement || modal;
     if (modalToClose === null) return;
@@ -138,6 +141,43 @@ function closeModal(e, modalElement = null) {
 function stopPropagation(e) {
     e.stopPropagation();
 }
+
+function closeModal2AndOpenModal1() {
+    // Ferme modal2
+    closeModal({preventDefault: () => {}}, document.getElementById('modal2'));
+
+    // Réinitialise la variable globale 'modal' à modal1 et prépare son affichage
+    modal = document.getElementById('modal1');
+    modal.style.display = null;
+    modal.removeAttribute("aria-hidden");
+    modal.setAttribute("aria-modal", "true");
+
+    // Réattache les gestionnaires d'événements nécessaires à modal1
+    modal.addEventListener("click", closeModal);
+    modal.querySelector(".js-modal-close").addEventListener("click", closeModal);
+    modal.querySelector(".js-modal-stop").addEventListener("click", stopPropagation);
+
+    // Met à jour les éléments focusables et met le focus sur le premier élément focusable
+    focusables = Array.from(modal.querySelectorAll(focusableSelector));
+    if (focusables.length > 0) {
+        focusables[0].focus();
+    }
+}
+
+
+document.querySelector(".js-modal-return").addEventListener("click", closeModal2AndOpenModal1);
+
+function reopenModal1() {
+    modal = document.getElementById('modal1'); // Réinitialiser la variable globale 'modal' à modal1
+    modal.style.display = null;
+    modal.removeAttribute("aria-hidden");
+    modal.setAttribute("aria-modal", "true");
+    modal.addEventListener("click", closeModal);
+    modal.querySelector(".js-modal-close").addEventListener("click", closeModal);
+    modal.querySelector(".js-modal-stop").addEventListener("click", stopPropagation);
+    
+}
+
 
 function focusInModal(e) {
     e.preventDefault();
@@ -289,17 +329,6 @@ function addImageInMiniGallery(imageDetails) {
     img.alt = imageDetails.title;
     img.setAttribute('data-id', imageDetails.id); // Ajoute l'attribut data-id
     miniatureContainer.appendChild(img);
-
-    // Ajout du bouton de suppression avec l'écouteur d'événements déjà configuré
-    const deleteIcon = document.createElement('i');
-    deleteIcon.classList.add('fas', 'fa-trash-alt', 'delete-icon');
-    deleteIcon.addEventListener('click', function(e) {
-        deleteImageFromGallery(imageDetails.id);
-        e.preventDefault();
-    });
-    miniatureContainer.appendChild(deleteIcon);
-
-    miniGallery.appendChild(miniatureContainer);
 }
 
 // Ajoute une image au portfolio.
@@ -343,7 +372,23 @@ async function addImageToPortfolio(file) {
     } catch (error) {
         console.error("Erreur lors de l'ajout de l'image:", error);
     }
+    updateMiniGallery(file);
 }
+
+function updateMiniGallery(imageDetails) {
+    const miniGallery = document.getElementById('miniGallery');
+    const miniatureContainer = document.createElement('div');
+    miniatureContainer.classList.add('miniature-container');
+
+    const img = document.createElement('img');
+    img.src = imageDetails.url; // Mettez l'URL de l'image ici
+    img.setAttribute('id', imageDetails.id); // Mettez l'ID de l'image ici
+
+    miniatureContainer.appendChild(img);
+
+    miniGallery.appendChild(miniatureContainer);
+}
+
 
 // Fonction pour initialiser le bouton d'ajout d'image et l'input de fichier
 function initializeAddImageButton() {
