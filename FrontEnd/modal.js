@@ -327,7 +327,7 @@ function addImageInMiniGallery(imageDetails) {
     const img = document.createElement('img');
     img.src = imageDetails.imageUrl;
     img.alt = imageDetails.title;
-    img.setAttribute('data-id', imageDetails.id); // Ajoute l'attribut data-id
+    img.setAttribute('data-id', imageDetails.id); 
     miniatureContainer.appendChild(img);
 }
 
@@ -381,8 +381,8 @@ function updateMiniGallery(imageDetails) {
     miniatureContainer.classList.add('miniature-container');
 
     const img = document.createElement('img');
-    img.src = imageDetails.url; // Mettez l'URL de l'image ici
-    img.setAttribute('id', imageDetails.id); // Mettez l'ID de l'image ici
+    img.src = imageDetails.url; 
+    img.setAttribute('id', imageDetails.id); 
 
     miniatureContainer.appendChild(img);
 
