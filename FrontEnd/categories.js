@@ -7,9 +7,11 @@ function initialiserCategories(data) {
 
     const categories = Array.from(categoriesSet);
     const menuCategorie = document.getElementById('menu-categorie');
-    const portfolio = document.getElementById('portfolio');
+      menuCategorie.innerHTML = ''; // Nettoie les boutons précédents
 
-    const boutonTous = creerBoutonCategorie('Tous');
+    const boutonTous = document.createElement('button');
+    boutonTous.textContent = 'Tous';
+    boutonTous.classList.add('stylebouton');
     boutonTous.addEventListener('click', () => {
         mettreAJourPortfolio(data);
         mettreAJourStyleBouton('Tous');
@@ -17,30 +19,15 @@ function initialiserCategories(data) {
     menuCategorie.appendChild(boutonTous);
 
     categories.forEach(categorie => {
-        const boutonCategorie = creerBoutonCategorie(categorie);
+        const boutonCategorie = document.createElement('button');
+        boutonCategorie.textContent = categorie;
+        boutonCategorie.classList.add('stylebouton');
         boutonCategorie.addEventListener('click', () => {
             const travauxFiltres = data.filter(travail => travail.category.name === categorie);
             mettreAJourPortfolio(travauxFiltres);
             mettreAJourStyleBouton(categorie);
         });
         menuCategorie.appendChild(boutonCategorie);
-    });
-}
-
-function creerBoutonCategorie(categorie) {
-    const boutonCategorie = document.createElement('button');
-    boutonCategorie.textContent = categorie;
-    boutonCategorie.classList.add('stylebouton');
-    return boutonCategorie;
-}
-
-function mettreAJourStyleBouton(categorieSelectionnee) {
-    const boutonsCategories = document.querySelectorAll('.stylebouton');
-    boutonsCategories.forEach(bouton => {
-        bouton.classList.remove('bouton-selectionne');
-        if (bouton.textContent === categorieSelectionnee) {
-            bouton.classList.add('bouton-selectionne');
-        }
     });
 }
 
@@ -77,3 +64,16 @@ function filtrerParCategorie(categorie) {
 
     mettreAJourPortfolio(travauxFiltres);
 }
+
+function mettreAJourStyleBouton(categorieSelectionnee) {
+    const boutonsCategories = document.querySelectorAll('#menu-categorie .stylebouton'); 
+        boutonsCategories.forEach(bouton => {
+        if (bouton.textContent === categorieSelectionnee) {
+            bouton.classList.add('bouton-selectionne'); 
+        } else {
+            bouton.classList.remove('bouton-selectionne'); 
+        }
+    });
+}
+
+

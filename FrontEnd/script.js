@@ -20,7 +20,7 @@ function mettreAJourPortfolio(travaux) {
 
         img.src = travail.imageUrl;
         img.alt = travail.title;
-        img.id = `work-${travail.id}`; // Utilise l'attribut id pour identifier un travail
+        img.id = `work-${travail.id}`; 
         figcaption.textContent = travail.title;
 
         figure.appendChild(img);
@@ -34,7 +34,7 @@ function mettreAJourPortfolio(travaux) {
     fetch('http://localhost:5678/api/works')
         .then(response => response.json())
         .then(responseData => {
-            data = responseData; // Stocke les données récupérées
+            data = responseData; 
 
             // Nettoie le contenu actuel de la galerie
             const portfolio = document.getElementById('portfolio');
@@ -47,6 +47,8 @@ function mettreAJourPortfolio(travaux) {
             gallerydiv.classList.add("gallery");
             portfolio.appendChild(gallerydiv);
             data.forEach(travail => addImageInDOM(travail));
+
+            initialiserCategories(data);
 
             document.getElementById('fileInputModal2').addEventListener('change', function() {
                 let imageUploadContainer = document.getElementById('image-upload-container');
@@ -67,6 +69,8 @@ function mettreAJourPortfolio(travaux) {
         })
         .catch(error => console.error('Erreur lors de la récupération des travaux:', error));
 })();
+
+
 
 function addImageInDOM(travail) {
     const gallerydiv = document.getElementsByClassName("gallery")[0]; 

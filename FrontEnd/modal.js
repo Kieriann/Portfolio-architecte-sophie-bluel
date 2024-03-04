@@ -364,7 +364,7 @@ async function addImageToPortfolio(file) {
                     }
                 });
             });
-             addImageInMiniGallery(imageDetails); 
+            updateMiniGallery(imageDetails);
             clearModal2Content(); 
         } else {
             console.error("Erreur lors de l'ajout de l'image: réponse non OK du serveur");
@@ -372,16 +372,14 @@ async function addImageToPortfolio(file) {
     } catch (error) {
         console.error("Erreur lors de l'ajout de l'image:", error);
     }
-    updateMiniGallery(file);
 }
 
 function updateMiniGallery(imageDetails) {
     const miniGallery = document.getElementById('miniGallery');
     const miniatureContainer = document.createElement('div');
     miniatureContainer.classList.add('miniature-container');
-
     const img = document.createElement('img');
-    img.src = imageDetails.url; 
+    img.src = imageDetails.imageUrl; 
     img.setAttribute('id', imageDetails.id); 
 
     miniatureContainer.appendChild(img);
@@ -405,7 +403,6 @@ function initializeAddImageButton() {
             }
         });
     }
-
     if (fileInputModal2) {
         fileInputModal2.addEventListener('change', function() {
             updateImageUploadContainer(fileInputModal2);
